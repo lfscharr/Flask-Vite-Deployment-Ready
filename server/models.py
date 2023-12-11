@@ -9,19 +9,18 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
 bcrypt = Bcrypt()
 
-# Models go here!
-
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     _password_hash = db.Column(db.String(255), nullable=False)
+    # log = db.relationship('Log', backref=db.backref('users', lazy=True, cascade="all,delete"))
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at= db.Column(db.DateTime, onupdate=db.func.now())
 
-    serialize_rules = ('-workouts.user','-workouts.exercises','-logs.user','-logs.exercise',)
+    serialize_rules = ('-workouts.user','-workouts.exercises', '-logs.user', '-logs.exercise')
 
     @hybrid_property
     def password_hash(self):
@@ -54,9 +53,9 @@ class Workout(db.Model, SerializerMixin):
     name = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('workouts', lazy=True))
+    user = db.relationship('User', backref=db.backref('workouts', lazy=True, cascade='all,delete'))
 
-    serialize_rules = ('-user.workouts',)
+    serialize_rules = ('-user.workouts','-exrcises.workout')
 
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = 'exercises'
@@ -66,7 +65,7 @@ class Exercise(db.Model, SerializerMixin):
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     workout = db.relationship('Workout', backref=db.backref('exercises', lazy=True))
 
-    serialize_rules = ('-workout.exercises',)
+    serialize_rules = ('-workout.exercises','-logs.exercises')
 
 class Log(db.Model, SerializerMixin):
     __tablename__ = 'logs'

@@ -10,6 +10,11 @@ from models import db, User, Workout, Exercise, Log
 
 
 def seed_data():
+    print("deleting tables")
+    Log.query.delete()
+    Exercise.query.delete()
+    Workout.query.delete()
+    User.query.delete()
     # Create sample users
     user1 = User(username='user1', password='password1')
     user2 = User(username='user2', password='password2')
