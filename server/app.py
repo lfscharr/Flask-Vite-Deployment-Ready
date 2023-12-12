@@ -123,7 +123,6 @@ class Login(Resource):
         password = data['password']  
         print(data)
         user = User.query.filter(User.username==username).first()
-
         if user and user.authenticate(password):
             session['user_id'] = user.id
             return user.to_dict(), 200
@@ -288,7 +287,7 @@ api.add_resource(Users, '/signup', endpoint="signup")
 api.add_resource(Logout, '/logout', endpoint = "logout")   
 api.add_resource(Login, '/signin', endpoint = "signin")
 api.add_resource(WorkoutResource, '/workout/<int:workout_id>', '/workout')
-api.add_resource(ExerciseResource, '/exercise/<int:exercise_id>', '/exercise')
+api.add_resource(ExerciseResource, '/exercise/<int:exercise_id>', '/exercise', '/workout/<int:workout_id>/exercise')
 api.add_resource(LogResource, '/log/<int:log_id>', '/log')
 api.add_resource(CheckSession, '/check_session', endpoint = "check_session")
 
