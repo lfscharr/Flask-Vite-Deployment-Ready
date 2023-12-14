@@ -23,8 +23,8 @@ def seed_data():
     db.session.commit()
 
     # Create sample workouts
-    workout1 = Workout(name='Workout 1', date=datetime.utcnow(), user_id=user1.id)
-    workout2 = Workout(name='Workout 2', date=datetime.utcnow(), user_id=user2.id)
+    workout1 = Workout(name='Workout 1', date=datetime.utcnow())
+    workout2 = Workout(name='Workout 2', date=datetime.utcnow())
 
     db.session.add_all([workout1, workout2])
     db.session.commit()
@@ -37,8 +37,8 @@ def seed_data():
     db.session.commit()
 
     # Create sample logs
-    log1 = Log(date=datetime.utcnow(), exercise_id=exercise1.id, user_id=user1.id, reps=10, sets=3, weight=50.0)
-    log2 = Log(date=datetime.utcnow(), exercise_id=exercise2.id, user_id=user2.id, reps=8, sets=4, weight=60.0)
+    log1 = Log(date=datetime.utcnow(), user_id= user1.id, reps=10, sets=3, weight=50, workouts = [workout1])
+    log2 = Log(date=datetime.utcnow(), user_id=user2.id,  reps=8, sets=4, weight=60.0, workouts=[workout2])
 
     db.session.add_all([log1, log2])
     db.session.commit()

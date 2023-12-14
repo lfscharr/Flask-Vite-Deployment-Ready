@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import router from './Components/routes';
 
 function RootLayout() {
   return (
@@ -20,7 +19,6 @@ function RootLayout() {
           <NavLink to="/log">Workout Logs </NavLink>
         </nav>
       </header>
-      <RouterProvider router={router} />
       <main>
         <Outlet />
       </main>
