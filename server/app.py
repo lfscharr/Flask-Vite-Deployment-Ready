@@ -27,6 +27,17 @@ app.secret_key = b'\x196Nz\x9e8\xcb\x11G\xa1\x87\x16a\xe9L\xad'
 # def not_found(e):
 #     return render_template("index.html")
 
+@app.before_request
+def check_if_logged_in():
+    open_access_list = [
+        'signup',
+        'signin',
+        'check_session'
+    ]
+
+    if (request.endpoint) not in open_access_list and (not session.get('user_id')):
+        return {'error': '401 Unauthorized'}, 401
+
 class UserResource(Resource):
     def get(self):
         user = [u.to_dict() for u in User.query.all()]
@@ -94,16 +105,6 @@ class Logout(Resource):
             session['user_id'] = None
         return {}, 204
 
-@app.before_request
-def check_if_logged_in():
-    open_access_list = [
-        'signup',
-        'signin',
-        'check_session'
-    ]
-
-    if (request.endpoint) not in open_access_list and (not session.get('user_id')):
-        return {'error': '401 Unauthorized'}, 401
 
 class CheckSession(Resource):
 
@@ -148,6 +149,22 @@ class WorkoutResource(Resource):
 
         new_workout = Workout(name=name, user=user)
         db.session.add(new_workout)
+
+        # Add new exercises and logs from data
+        for exercise_data in data['exercises']:
+            new_exercise = Exercise(name=exercise_data['name'], duration=exercise_data['duration'], workout=new_workout)
+            db.session.add(new_exercise)
+
+            for set_data in exercise_data['sets']:
+                new_log = Log(
+                    reps=set_data['reps'],
+                    sets=set_data['sets'],
+                    weight=set_data.get('weight'), 
+                    exercise=new_exercise,
+                    user=user
+                )
+                db.session.add(new_log)
+
         db.session.commit()
 
         return new_workout.to_dict(), 201
@@ -167,7 +184,6 @@ class WorkoutResource(Resource):
             data = request.get_json()
             if 'name' in data:
                 workout.name = data['name']
-            # You can add more fields to update as needed
 
             db.session.commit()
             return {'message': 'Workout updated successfully'}, 200
@@ -275,19 +291,55 @@ class LogResource(Resource):
             return {'message': 'Log updated successfully'}, 200
         else:
             return {'message': 'Log not found'}, 404
+        
+class UserLogs(Resource):
+    def get(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return {"message": "User not found"}, 404
+
+        # Get all logs for the user
+        logs = user.logs
+        return [log.to_dict() for log in logs], 200
+
+
+class WorkoutLogs(Resource):
+    def get(self, workout_id):
+        workout = Workout.query.get(workout_id)
+        if not workout:
+            return {"message": "Workout not found"}, 404
+
+        # Get all logs associated with the workout
+        logs = workout.exercises.all()
+        log_data = [exercise.to_dict() for exercise in logs]
+        for exercise in log_data:
+            exercise['logs'] = [log.to_dict() for log in exercise.logs]
+
+        return log_data, 200
+
+
+class ExerciseLogs(Resource):
+    def get(self, exercise_id):
+        exercise = Exercise.query.get(exercise_id)
+        if not exercise:
+            return {"message": "Exercise not found"}, 404
+
+        # Get all logs associated with the exercise
+        logs = exercise.logs
+        return [log.to_dict() for log in logs], 200
 
         
-
-
 # Define Routes
-
 
 api.add_resource(UserResource, '/user', '/user/<int:user_id>') 
 api.add_resource(Users, '/signup', endpoint="signup")
+api.add_resource(UserLogs, '/user/<int:user_id>/logs')
 api.add_resource(Logout, '/logout', endpoint = "logout")   
 api.add_resource(Login, '/signin', endpoint = "signin")
 api.add_resource(WorkoutResource, '/workout/<int:workout_id>', '/workout')
+api.add_resource(WorkoutLogs, '/workout/<int:workout_id>/logs')
 api.add_resource(ExerciseResource, '/exercise/<int:exercise_id>', '/exercise', '/workout/<int:workout_id>/exercise')
+api.add_resource(ExerciseLogs, '/exercise/<int:exercise_id>/logs')
 api.add_resource(LogResource, '/log/<int:log_id>', '/log')
 api.add_resource(CheckSession, '/check_session', endpoint = "check_session")
 
@@ -299,4 +351,5 @@ def catch_all(path):
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
+
 

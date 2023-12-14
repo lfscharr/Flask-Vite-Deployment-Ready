@@ -64,6 +64,7 @@ class Exercise(db.Model, SerializerMixin):
     duration = db.Column(db.Integer, nullable=False)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     workout = db.relationship('Workout', backref=db.backref('exercises', lazy=True))
+    logs = db.relationship('Log', backref='exercise', lazy=True)
 
     serialize_rules = ('-workout.exercises','-logs.exercises')
 
