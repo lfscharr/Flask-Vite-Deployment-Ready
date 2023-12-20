@@ -7,7 +7,7 @@ function LogWorkout() {
   const [reps, setReps] = useState(0);
   const [weight, setWeight] = useState(0);
   const [exercises, setExercises] = useState([]);
-  const [workoutId, setWorkoutId] = useState(null);
+  const [workoutId, setWorkoutId] = useState('');
 
   useEffect(() => {
     fetchWorkoutData();
@@ -15,7 +15,7 @@ function LogWorkout() {
 
   const fetchWorkoutData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/workout', {
+      const response = await fetch(`/api/workout/${workoutId}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(workoutId)
@@ -37,7 +37,7 @@ function LogWorkout() {
 
   const createNewWorkout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/workout', {
+      const response = await fetch(`/api/workout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ function LogWorkout() {
 
   const fetchExercises = async (workoutId) => {
     try {
-      const response = await fetch(`http://your-api-url/workout/${workoutId}/exercise`, {
+      const response = await fetch(`/api/workout/${workoutId}/exercise`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -69,7 +69,7 @@ function LogWorkout() {
 
   const addExercise = async () => {
     try {
-      const response = await fetch(`http://your-api-url/workout/${workoutId}/exercise`, {
+      const response = await fetch(`/api/workout/${workoutId}/exercise`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -6,18 +6,11 @@ import WorkoutHistory from "./WorkoutHistory";
 import Logout from "./LogOut";
 import SignUp from "./SignUp";
 
-function HomePage() {
+function HomePage({user,setUser}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/check_session").then((res) => {
-      if (res.ok) {
-        res.json().then((user) => setUser(user));
-      }
-    });
-  }, []);
 
   function handleNameChange(e) {
     setUsername(e.target.value);
@@ -29,7 +22,7 @@ function HomePage() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    fetch("/api/signin", {
+    fetch(`/api/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: username, password: password }),
@@ -48,7 +41,6 @@ function HomePage() {
           <input type="text" value={password} onChange={handlePasswordChange} />
           <button type="submit">Login</button>
         </form>
-        <SignUp />
       </div>
     );
   }
@@ -59,7 +51,7 @@ function HomePage() {
       <UserProfile userId={user.id} />
       <LogWorkout userId={user.id} />
       <WorkoutHistory />
-      <Logout />
+      <Logout  user={user} setUser={setUser} />
     </>
   );
 }

@@ -10,6 +10,7 @@ from sqlalchemy import MetaData
 import secrets
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
+
 load_dotenv()
 
 # Local imports
@@ -34,6 +35,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://pulsepeak_user:FDO5gr7tM12
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 app.secret_key = secrets.token_hex(16)
+
 
 
 # Define metadata, instantiate db

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Logout = ({ onLogout }) => {
+const Logout = ({ onLogout ,setUser }) => {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
       fetch("/api/logout", {

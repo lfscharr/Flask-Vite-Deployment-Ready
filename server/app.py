@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# Standard library imports
-
-# Remote library imports
 from flask import Flask, request, render_template, make_response, jsonify, session
 from flask_restful import Resource, Api
 from flask_migrate import Migrate
@@ -18,15 +15,6 @@ CORS(app)
 
 app.secret_key = b'\x196Nz\x9e8\xcb\x11G\xa1\x87\x16a\xe9L\xad'
 
-# @app.route('/')
-# def index():
-#     return '<h1>Phase 4 Project Server</h1>'
-
-# Views go here! use either route!
-# @app.errorhandler(404)
-# def not_found(e):
-#     return render_template("index.html")
-
 @app.before_request
 def check_if_logged_in():
     open_access_list = [
@@ -40,11 +28,8 @@ def check_if_logged_in():
 
 class UserResource(Resource):
     def get(self):
-        user = [u.to_dict() for u in User.query.all()]
-        if user:
-            return user, 200
-        else:
-            return {"message": "User not found"}, 404
+      users = User.query.all()
+      return {'users': [user.serialize() for user in users]}, 200
 
     def post(self):
         data = request.get_json()
@@ -85,6 +70,53 @@ class UserResource(Resource):
         else:
             return {'message': 'User not found'}, 404
         
+class UserResourceById(Resource):
+    def get(self, user_id):
+        user_id = [u.to_dict() for u in User.query.all()]
+        if user_id:
+            return user_id, 200
+        else:
+            return {"message": "User not found"}, 404
+
+    def post(self, user_id):
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return {"message": "Username already exists. Choose a different username."}, 400
+
+
+        username = User(username=username, password=password)
+        db.session.add(username)
+        db.session.commit()
+        return {"message": "User created successfully", "user_id": username.id}, 201
+    
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return {'message': 'User deleted successfully'}, 200
+        else:
+            return {'message': 'User not found'}, 404
+
+    def patch(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            data = request.get_json()
+            if 'username' in data:
+                user.username = data['username']
+            if 'password' in data:
+                user.password = data['password']
+
+            db.session.commit()
+            return {'message': 'User updated successfully'}, 200
+        else:
+            return {'message': 'User not found'}, 404
+
+        
 class Users(Resource):
     def post(self):
         data = request.get_json()
@@ -109,7 +141,7 @@ class Logout(Resource):
 class CheckSession(Resource):
 
     def get(self):
-        user_id = session['user_id']
+        user_id = session.get('user_id')
         if user_id:
             user = User.query.filter(User.id == user_id).first()
             return user.to_dict(), 200
@@ -138,7 +170,7 @@ class WorkoutResource(Resource):
         else:
             return {"message": "Workout not found"}, 404
 
-    def post(self):
+    def post(self, workout_id):
         data = request.get_json()
         name = data['name']
         user_id = data['user_id']
@@ -331,7 +363,8 @@ class ExerciseLogs(Resource):
         
 # Define Routes
 
-api.add_resource(UserResource, '/user', '/user/<int:user_id>') 
+api.add_resource(UserResource, '/user') 
+api.add_resource(UserResourceById, '/user/<int:user_id>')
 api.add_resource(Users, '/signup', endpoint="signup")
 api.add_resource(UserLogs, '/user/<int:user_id>/logs')
 api.add_resource(Logout, '/logout', endpoint = "logout")   
