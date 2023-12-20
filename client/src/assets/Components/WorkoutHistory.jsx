@@ -7,14 +7,12 @@ const WorkoutHistory = () => {
   useEffect(() => {
     const fetchWorkoutHistory = async () => {
       try {
-        const response = await fetch('http://your-api-url/workout-history');
+        const response = await fetch('http:/localhost:5000/log');
 
         const data = await response.json();
 
-        // Update state with workout history upon successful fetch
         setWorkoutHistory(data);
       } catch (error) {
-        // Handle fetch error, e.g., display an error message
         console.error('Fetch workout history failed:', error);
       }
     };
@@ -28,7 +26,6 @@ const WorkoutHistory = () => {
       {workoutHistory.map((workout) => (
         <div key={workout.id}>
           <p>Workout Name: {workout.name}</p>
-          {/* Display other workout information as needed */}
         </div>
       ))}
     </div>

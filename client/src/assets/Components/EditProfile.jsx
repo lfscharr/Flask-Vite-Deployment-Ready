@@ -1,4 +1,4 @@
-// EditProfile.jsx
+
 import React, { useState, useEffect } from 'react';
 
 const EditProfile = ({ userId }) => {
@@ -9,10 +9,9 @@ const EditProfile = ({ userId }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://your-api-url/user/${userId}`);
+        const response = await fetch(`http://localhost:5000/user/${userId}`);
         const data = await response.json();
 
-        // Populate the form with existing user data
         setUsername(data.username);
       } catch (error) {
         console.error('Fetch user profile failed:', error);

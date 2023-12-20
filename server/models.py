@@ -20,7 +20,7 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at= db.Column(db.DateTime, onupdate=db.func.now())
 
-    serialize_rules = ("logs.user",)
+    serialize_rules = ("-logs.user", "-logs")
 
     @hybrid_property
     def password_hash(self):
@@ -74,4 +74,4 @@ class Log(db.Model, SerializerMixin):
     sets = db.Column(db.Integer)
     weight = db.Column(db.Float)
 
-    serialize_rules = ("-workouts",)
+    serialize_rules = ("-workouts", "-user.logs")

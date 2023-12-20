@@ -10,7 +10,7 @@ const UserProfile = ({ userId }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:/user/${userId}`);
+        const response = await fetch(`http://localhost:5000/user/${userId}`);
         const data = await response.json();
         setUser(data);
       } catch (error) {
@@ -49,7 +49,6 @@ const UserProfile = ({ userId }) => {
         <div>
           <h2>User Profile</h2>
           <p>Username: {user.username}</p>
-          {/* Display other user information as needed */}
           <button onClick={() => setShowEditForm(true)}>Edit Profile</button>
           <button onClick={handleDeleteProfile}>Delete Profile</button>
           {showEditForm && <EditProfile userId={userId} />}

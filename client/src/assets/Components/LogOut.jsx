@@ -7,7 +7,6 @@ const Logout = ({ onLogout }) => {
         method: "DELETE",
       })
         .then(() => {
-          // Update state and redirect on successful logout
           setUser(null);
           setUserName("");
           window.location.href = "/"; // Redirect to home
@@ -17,7 +16,6 @@ const Logout = ({ onLogout }) => {
         });
     }
 
-    // Call the onLogout callback if provided
     if (onLogout) {
       onLogout();
     }
