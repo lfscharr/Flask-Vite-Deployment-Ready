@@ -235,13 +235,14 @@ class ExerciseResource(Resource):
         data = request.get_json()
         name = data['name']
         duration = data['duration']
-        workout_id = data['workout_id']
+        # workout_id = data['workout_id']
 
-        workout = Workout.query.get(workout_id)
-        if not workout:
-            return {"message": "Workout not found"}, 404
+        # workout = Workout.query.get(workout_id)
+        # if not workout:
+        #     return {"message": "Workout not found"}, 404
 
-        new_exercise = Exercise(name=name, duration=duration, workout=workout)
+        # new_exercise = Exercise(name=name, duration=duration, workout=workout)
+        new_exercise = Exercise(name=name, duration=duration)
         db.session.add(new_exercise)
         db.session.commit()
 

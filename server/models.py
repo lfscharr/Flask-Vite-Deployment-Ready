@@ -62,7 +62,7 @@ class Exercise(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
-    workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
+    workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=True)
 
 class Log(db.Model, SerializerMixin):
     __tablename__ = 'logs'

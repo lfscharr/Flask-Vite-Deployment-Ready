@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function LogWorkout() {
-  const [workoutName, setWorkoutName] = useState('');
-  const [exerciseName, setExerciseName] = useState('');
+  const [workoutName, setWorkoutName] = useState("");
+  const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState(0);
   const [reps, setReps] = useState(0);
   const [weight, setWeight] = useState(0);
   const [exercises, setExercises] = useState([]);
-  const [workoutId, setWorkoutId] = useState('');
+  const [workoutId, setWorkoutId] = useState("");
+  const [duration, setDuration] = useState(0);
+  const [newLog, setNewLog] = useState("");
 
   useEffect(() => {
     fetchWorkoutData();
-  }, []); 
+  }, []);
 
   const fetchWorkoutData = async () => {
     try {
       const response = await fetch(`/api/workout/${workoutId}`, {
-        method: 'GET',
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(workoutId)
+        body: JSON.stringify(workoutId),
       });
       const data = await response.json();
 
@@ -31,65 +34,89 @@ function LogWorkout() {
         createNewWorkout();
       }
     } catch (error) {
-      console.error('Error fetching workout data:', error);
+      console.error("Error fetching workout data:", error);
     }
   };
+
+  console.log(exercises);
 
   const createNewWorkout = async () => {
     try {
       const response = await fetch(`/api/workout`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-        name: '',
+          name: "",
         }),
       });
       const data = await response.json();
       setWorkoutId(data.id);
     } catch (error) {
-      console.error('Error creating new workout:', error);
+      console.error("Error creating new workout:", error);
     }
   };
 
   const fetchExercises = async (workoutId) => {
     try {
       const response = await fetch(`/api/workout/${workoutId}/exercise`, {
-        method: 'GET',
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const data = await response.json();
       setExercises(data);
     } catch (error) {
-      console.error('Error fetching exercises:', error);
+      console.error("Error fetching exercises:", error);
     }
   };
 
   const addExercise = async () => {
     try {
-      const response = await fetch(`/api/workout/${workoutId}/exercise`, {
-        method: 'POST',
+      const response = await fetch(`/api/exercise`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: exerciseName,
-          sets: 0,
-          reps: 0,
-          weight: 0,
+          duration: duration,
         }),
       });
       const newExercise = await response.json();
       setExercises((prevExercises) => [...prevExercises, newExercise]);
-      setExerciseName('');
-      setSets(0);
-      setReps(0);
-      setWeight(0);
+      setExerciseName("");
+      setDuration("");
+      // setSets(0);
+      // setReps(0);
+      // setWeight(0);
     } catch (error) {
-      console.error('Error adding exercise:', error);
+      console.error("Error adding exercise:", error);
     }
+
+    const newLog = async () => {
+      try {
+        const response = await fetch(`/api/log/${log.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            workoutId: workoutId,
+            user_id: user_id,
+          }),
+        });
+        const setNewLog = await response.json();
+        setWorkoutId((prevWorkouts) => [...prevWorkouts, newWorkouts]);
+        setSets(0);
+        setReps(0);
+        setWeight(0);
+      } catch (error) {
+        console.error("Error adding log:", error);
+      }
+    }
+    
   };
 
   return (
@@ -108,7 +135,23 @@ function LogWorkout() {
           value={exerciseName}
           onChange={(e) => setExerciseName(e.target.value)}
         />
-        <label>Sets:</label>
+        <label>Duration:</label>
+        <input
+          type="text"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+        />
+        
+        <button onClick={addExercise}>Add Exercise</button>
+      </div>
+      <div>
+        <h2>Exercises</h2>
+        <ul>
+          {exercises.map((exercise) => (
+            <li key={exercise.id}>
+              
+                <strong>{exercise.name}</strong>
+                <label>Sets:</label>
         <input
           type="number"
           value={sets}
@@ -126,14 +169,9 @@ function LogWorkout() {
           value={weight}
           onChange={(e) => setWeight(parseFloat(e.target.value))}
         />
-        <button onClick={addExercise}>Add Exercise</button>
-      </div>
-      <div>
-        <h2>Exercises</h2>
-        <ul>
-          {exercises.map((exercise) => (
-            <li key={exercise.id}>
-              <strong>{exercise.name}</strong> - Sets: {exercise.sets}, Reps: {exercise.reps}, Weight: {exercise.weight}
+        <Link to={`/log/${exercise.id}`}>
+        <button onClick={newLog}>Add Log</button>
+              </Link>
             </li>
           ))}
         </ul>
