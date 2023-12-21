@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 
-function LogWorkout() {
+function LogWorkout({ userId }) {
   const [workoutName, setWorkoutName] = useState("");
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState(0);
@@ -10,10 +10,10 @@ function LogWorkout() {
   const [exercises, setExercises] = useState([]);
   const [workoutId, setWorkoutId] = useState("");
   const [duration, setDuration] = useState(0);
-  const [newLog, setNewLog] = useState("");
+  const navigate = useNavigate()
 
   useEffect(() => {
-    fetchWorkoutData();
+    // fetchWorkoutData();
   }, []);
 
   const fetchWorkoutData = async () => {
@@ -38,9 +38,8 @@ function LogWorkout() {
     }
   };
 
-  console.log(exercises);
-
-  const createNewWorkout = async () => {
+  const createNewWorkout = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch(`/api/workout`, {
         method: "POST",
@@ -72,7 +71,8 @@ function LogWorkout() {
     }
   };
 
-  const addExercise = async () => {
+  const addExercise = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch(`/api/exercise`, {
         method: "POST",
@@ -88,39 +88,41 @@ function LogWorkout() {
       setExercises((prevExercises) => [...prevExercises, newExercise]);
       setExerciseName("");
       setDuration("");
-      // setSets(0);
-      // setReps(0);
-      // setWeight(0);
     } catch (error) {
       console.error("Error adding exercise:", error);
     }
+  };
 
-    const newLog = async () => {
-      try {
-        const response = await fetch(`/api/log/${log.id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            workoutId: workoutId,
-            user_id: user_id,
-          }),
-        });
-        const setNewLog = await response.json();
-        setWorkoutId((prevWorkouts) => [...prevWorkouts, newWorkouts]);
-        setSets(0);
-        setReps(0);
-        setWeight(0);
-      } catch (error) {
-        console.error("Error adding log:", error);
-      }
+  const createNewLog = async (e) => {
+    console.log("post");
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/log`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reps: reps,
+          sets: sets,
+          weight: weight,
+          user_id: userId,
+        }),
+      });
+      const newLog = await response.json();
+      setWorkoutId((prevWorkouts) => [...prevWorkouts, newLog]);
+      setSets(0);
+      setReps(0);
+      setWeight(0);
+      navigate(`/log/${userId}`)
+    } catch (error) {
+      console.error("Error adding log:", error);
     }
-    
   };
 
   return (
     <div>
+      <form onSubmit={(e) => createNewWorkout(e)}>
       <h1>Workout Log </h1>
       <label>Workout Name:</label>
       <input
@@ -128,54 +130,56 @@ function LogWorkout() {
         value={workoutName}
         onChange={(e) => setWorkoutName(e.target.value)}
       />
-      <div>
-        <label>Exercise Name:</label>
-        <input
-          type="text"
-          value={exerciseName}
-          onChange={(e) => setExerciseName(e.target.value)}
-        />
-        <label>Duration:</label>
-        <input
-          type="text"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-        />
-        
-        <button onClick={addExercise}>Add Exercise</button>
-      </div>
-      <div>
-        <h2>Exercises</h2>
-        <ul>
-          {exercises.map((exercise) => (
-            <li key={exercise.id}>
-              
+      </form>
+      <form onSubmit={(e) => addExercise(e)}>
+        <div>
+          <label>Exercise Name:</label>
+          <input
+            type="text"
+            value={exerciseName}
+            onChange={(e) => setExerciseName(e.target.value)}
+          />
+          <label>Duration:</label>
+          <input
+            type="text"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+          />
+
+          <button type="submit">Add Exercise</button>
+        </div>
+      </form>
+      <form onSubmit={(e) => createNewLog(e)}>
+        <div>
+          <h2>Exercises</h2>
+          <ul>
+            {exercises?.map((exercise) => (
+              <li key={exercise.id}>
                 <strong>{exercise.name}</strong>
                 <label>Sets:</label>
-        <input
-          type="number"
-          value={sets}
-          onChange={(e) => setSets(parseInt(e.target.value))}
-        />
-        <label>Reps:</label>
-        <input
-          type="number"
-          value={reps}
-          onChange={(e) => setReps(parseInt(e.target.value))}
-        />
-        <label>Weight:</label>
-        <input
-          type="number"
-          value={weight}
-          onChange={(e) => setWeight(parseFloat(e.target.value))}
-        />
-        <Link to={`/log/${exercise.id}`}>
-        <button onClick={newLog}>Add Log</button>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+                <input
+                  type="number"
+                  value={sets}
+                  onChange={(e) => setSets(parseInt(e.target.value))}
+                />
+                <label>Reps:</label>
+                <input
+                  type="number"
+                  value={reps}
+                  onChange={(e) => setReps(parseInt(e.target.value))}
+                />
+                <label>Weight:</label>
+                <input
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(parseFloat(e.target.value))}
+                />
+                  <button type="submit">Add Log</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </form>
     </div>
   );
 }

@@ -8,12 +8,13 @@ const WorkoutHistory = () => {
   useEffect(() => {
     const fetchWorkoutHistory = async () => {
       try {
-        const response = await fetch(`/log/${id}`);
+        console.log(id);
+        const response = await fetch(`/api/log/${id}`);
 
         const data = await response.json();
         console.log(data);
 
-        setWorkoutHistory(data);
+        setWorkoutHistory(data.user);
       } catch (error) {
         console.error("Fetch workout history failed:", error);
       }
@@ -29,7 +30,15 @@ const WorkoutHistory = () => {
       <h2>Workout History</h2>
       {workoutHistory.map((workout) => (
         <div key={workout.id}>
-          <p>Workout Name: {workout.name}</p>
+          <p>Workout Name: {workout.reps}</p>
+
+          <h2>Exercises</h2>
+          {/* {workout.exercises.map((exercise) => (
+            <li key={exercise.id}>
+              <p>Exercise Name: {exercise.name}</p>
+              <p>Duration: {exercise.duration}</p>
+            </li>
+          ))} */}
         </div>
       ))}
     </div>

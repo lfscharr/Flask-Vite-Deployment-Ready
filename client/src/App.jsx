@@ -37,7 +37,7 @@ function App() {
           element={<SignIn user={user} setUser={setUser} />}
         />
         <Route
-          path="/signup"
+          path="/api/signup"
           element={<SignUp user={user} setUser={setUser} />}
         />
         <Route
