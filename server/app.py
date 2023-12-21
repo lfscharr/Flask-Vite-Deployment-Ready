@@ -141,6 +141,7 @@ class Logout(Resource):
 class CheckSession(Resource):
 
     def get(self):
+        print(session)
         user_id = session.get('user_id')
         if user_id:
             user = User.query.filter(User.id == user_id).first()
@@ -273,28 +274,28 @@ class ExerciseResource(Resource):
 
 
 class LogResource(Resource):
-    def get(self, log_id):
-        log = Log.query.get(log_id)
-        if log:
-            return log.to_dict(), 200
+    def get(self, user_id):
+        logs = Log.query.filter_by(user_id =user_id).all()
+        all_logs = [log.to_dict() for log in logs]
+        print(all_logs)
+        if logs:
+            return all_logs, 200
         else:
             return {"message": "Log not found"}, 404
 
     def post(self):
         data = request.get_json()
-        reps = data['reps']
-        sets = data['sets']
-        weight = data['weight']
-        exercise_id = data['exercise_id']
+        # exercise_id = data['exercise_id']
         user_id = data['user_id']
 
-        exercise = Exercise.query.get(exercise_id)
-        user = User.query.get(user_id)
+        # exercise = Exercise.query.get(exercise_id)
+        user = User.query.filter(User.id == user_id).first()
 
-        if not exercise or not user:
-            return {"message": "Exercise or User not found"}, 404
+        # if not exercise or not user:
+        #     return {"message": "Exercise or User not found"}, 404
 
-        new_log = Log(reps=reps, sets=sets, weight=weight, exercise=exercise, user=user)
+        new_log = Log(user=user)
+        print(new_log.reps)
         db.session.add(new_log)
         db.session.commit()
 
@@ -361,9 +362,32 @@ class ExerciseLogs(Resource):
         logs = exercise.logs
         return [log.to_dict() for log in logs], 200
 
-        
-# Define Routes
+class PostLogs(Resource):
+    def post(self):
+        data = request.get_json()
+        user_id = data["userId"]
+        user = User.query.filter(User.id == user_id).first()
 
+        new_log = Log(user=user)
+        db.session.add(new_log)
+        db.session.commit()
+        workoutName= data["workoutName"]
+        new_workout = Workout(name=workoutName, log_id=new_log.id)
+
+        db.session.add(new_workout)
+        db.session.commit()
+
+        exercises = data["exercises"]
+        for exercise in exercises:
+            print(exercise)
+            new_exercise = Exercise(name=exercise["exerciseName"], reps=exercise["reps"], sets=exercise["sets"], weight=exercise["weight"], duration=exercise["duration"], workout_id=new_workout.id)
+
+            db.session.add(new_exercise)
+            db.session.commit()
+        return {}, 200
+
+# Define Routes
+api.add_resource(PostLogs, '/postlog')
 api.add_resource(UserResource, '/user') 
 api.add_resource(UserResourceById, '/user/<int:user_id>')
 api.add_resource(Users, '/signup', endpoint="signup")
@@ -374,7 +398,7 @@ api.add_resource(WorkoutResource, '/workout/<int:workout_id>', '/workout')
 api.add_resource(WorkoutLogs, '/workout/<int:workout_id>/logs')
 api.add_resource(ExerciseResource, '/exercise/<int:exercise_id>', '/exercise', '/workout/<int:workout_id>/exercise')
 api.add_resource(ExerciseLogs, '/exercise/<int:exercise_id>/logs')
-api.add_resource(LogResource, '/log/<int:log_id>', '/log')
+api.add_resource(LogResource, '/log/<int:user_id>', '/log')
 api.add_resource(CheckSession, '/check_session', endpoint = "check_session")
 
 

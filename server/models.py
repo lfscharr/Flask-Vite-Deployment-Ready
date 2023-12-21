@@ -18,9 +18,10 @@ class User(db.Model, SerializerMixin):
     logs = db.relationship('Log', backref=db.backref('user', lazy=True, cascade="all,delete"))
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at= db.Column(db.DateTime, onupdate=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     serialize_rules = ("-logs.user", "-logs")
+
 
     @hybrid_property
     def password_hash(self):
@@ -53,9 +54,9 @@ class Workout(db.Model, SerializerMixin):
     name = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     log_id = db.Column(db.Integer, db.ForeignKey("logs.id"))  
-    exercises = db.relationship("Exercise", backref="exercise")
+    exercises = db.relationship("Exercise", backref="workout")
 
-    serialize_rules = ("-exercises",)
+    serialize_rules = ("-exercises.workout",)
 
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = 'exercises'
@@ -63,6 +64,10 @@ class Exercise(db.Model, SerializerMixin):
     name = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=True)
+    # logs = db.relationship("Log", backref="exercise",)
+    reps = db.Column(db.Integer)
+    sets = db.Column(db.Integer)
+    weight = db.Column(db.Float)
 
 class Log(db.Model, SerializerMixin):
     __tablename__ = 'logs'
@@ -70,8 +75,6 @@ class Log(db.Model, SerializerMixin):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     workouts = db.relationship("Workout", backref="workout_log")
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    reps = db.Column(db.Integer)
-    sets = db.Column(db.Integer)
-    weight = db.Column(db.Float)
 
-    serialize_rules = ("-workouts", "-user.logs")
+    serialize_rules = ("-workouts.workout_log", "-user.logs")
+    

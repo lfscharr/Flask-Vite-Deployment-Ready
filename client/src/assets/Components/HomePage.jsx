@@ -48,9 +48,9 @@ function HomePage({user,setUser}) {
   return (
     <>
       <h1>Welcome, {user.username}</h1>
-      <UserProfile userId={user.id} />
       <LogWorkout userId={user.id} />
-      <WorkoutHistory />
+      {/* <WorkoutHistory /> */}
+      <UserProfile userId={user.id} />
       <Logout  user={user} setUser={setUser} />
     </>
   );
