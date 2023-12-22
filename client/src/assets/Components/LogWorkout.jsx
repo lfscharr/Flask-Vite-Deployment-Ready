@@ -113,6 +113,11 @@ function LogWorkout({ userId }) {
       <form onSubmit={(e) => addExercise(e)}></form>
 
       <form onSubmit={(e) => createNewLog(e)}>
+      <div id="video-container">
+       <video id="video" src= "/src/assets/Components/4783739_Women_Gym_Exercise_1920x1080.mp4"
+            autoPlay="{true}" loop muted> 
+        </video> 
+        </div>
         <div>
           <h2>Add New Workout! </h2>
           <label>Workout Name:</label>

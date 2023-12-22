@@ -32,6 +32,11 @@ const WorkoutHistory = () => {
         log.workouts.map((workout) => (
           <div key={workout.id}>
             <h2>Workout: {workout.name}</h2>
+            <div id="video-container">
+       <video id="video" src= "/src/assets/Components/4783739_Women_Gym_Exercise_1920x1080.mp4"
+            autoPlay="{true}" loop muted> 
+        </video> 
+        </div>
             
 
             <h2>Exercises</h2>
