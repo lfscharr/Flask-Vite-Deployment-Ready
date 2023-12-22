@@ -32,6 +32,7 @@ const UserProfile = ({ userId }) => {
 
      if (response.ok) {
        console.log('Profile deleted successfully');
+       window.location.href = "/";
      } 
      else {
        const errorData = await response.json();
