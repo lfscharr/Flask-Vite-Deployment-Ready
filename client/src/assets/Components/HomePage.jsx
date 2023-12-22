@@ -9,9 +9,7 @@ import SignUp from "./SignUp";
 function HomePage({user,setUser}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useState(null);
-
-
+  
   function handleNameChange(e) {
     setUsername(e.target.value);
   }
@@ -47,9 +45,8 @@ function HomePage({user,setUser}) {
 
   return (
     <>
-      <h1>Welcome, {user.username}</h1>
+      <h1>Welcome, {user.username}!</h1>
       <LogWorkout userId={user.id} />
-      {/* <WorkoutHistory /> */}
       <UserProfile userId={user.id} />
       <Logout  user={user} setUser={setUser} />
     </>

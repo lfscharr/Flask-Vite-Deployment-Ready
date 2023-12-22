@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import EditProfile from './EditProfile.jsx';
+import { Link } from 'react-router-dom'
 
 
 const UserProfile = ({ userId }) => {
@@ -48,8 +49,11 @@ const UserProfile = ({ userId }) => {
    <div>
      {user && (
        <div>
-         <h2>User Profile</h2>
-         <p>Username: {user.username}</p>
+         <h2></h2>
+         <p> {user.username}</p>
+         <Link to={`/log/${userId}`}>
+           <button>Workout History</button>
+         </Link>
          <button onClick={() => setShowEditForm(true)}>Edit Profile</button>
          <button onClick={handleDeleteProfile}>Delete Profile</button>
          {showEditForm && <EditProfile userId={userId} user={user} setUser={setUser} />}

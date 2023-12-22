@@ -19,6 +19,7 @@ const SignUp = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Sign-up successful:', data);
+        window.location.href = "/"
       } 
       else {
         const errorData = await response.json();

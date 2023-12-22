@@ -13,10 +13,7 @@ function RootLayout() {
       <header>
         <nav>
           <NavLink to="/">Home </NavLink>
-          {/* <NavLink to="/api/signin">Sign In </NavLink> */}
           <NavLink to="/api/signup">Sign Up </NavLink>
-          {/* <NavLink to="/api/logout">Logout </NavLink>
-          <NavLink to="/api/log">Workout Logs </NavLink> */}
         </nav>
       </header>
       <main>
